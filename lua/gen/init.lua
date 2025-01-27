@@ -83,7 +83,10 @@ local function close_window(opts)
         local extracted
 
         if type(opts.extract) == "function" then
-            extracted = opts.extract({ result_string = globals.result_string })
+            extracted = opts.extract({
+                result_string = globals.result_string,
+                model = opts.model,
+            })
         else
             extracted = globals.result_string:match(opts.extract)
         end
