@@ -80,7 +80,14 @@ M.setup = function(opts) for k, v in pairs(opts) do M[k] = v end end
 local function close_window(opts)
     local lines = {}
     if opts.extract then
-        local extracted = globals.result_string:match(opts.extract)
+        local extracted
+
+        if type(opts.extract) == "function" then
+            extracted = opts.extract({ result_string = globals.result_string })
+        else
+            extracted = globals.result_string:match(opts.extract)
+        end
+
         if not extracted then
             if not opts.no_auto_close then
                 vim.api.nvim_win_hide(globals.float_win)
@@ -320,7 +327,11 @@ M.exec = function(options)
     end
 
     prompt = substitute_placeholders(prompt)
-    opts.extract = substitute_placeholders(opts.extract)
+
+    if type(opts.extract) == "string" then
+        opts.extract = substitute_placeholders(opts.extract)
+    end
+
     prompt = string.gsub(prompt, "%%", "%%%%")
 
     globals.result_string = ""
